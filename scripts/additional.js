@@ -3,14 +3,9 @@
  */
 
 function f() {
-    //alert('1');
-
     var worker = new Worker("scripts/worker.js");
 
     worker.onmessage = function (event) {
         alert(event.data);
     };
-
-
-
 }

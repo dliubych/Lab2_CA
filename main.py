@@ -17,6 +17,13 @@ def worker_get():
     return "abcdefg"
 
 
+@post('/workerData')
+def worker_post():
+    print(request.forms.get('data'))
+    # username = request.forms.get('username')
+    # password = request.forms.get('password')
+
+
 run(host='localhost', port=8080, debug=True)
 
 
