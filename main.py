@@ -14,41 +14,20 @@ def index():
 
 @get('/workerData')
 def worker_get():
-    return "abcdefg"
+    # return "abc"
+    return {'n': 4, 'text': 'abba bbbb aaaa  aaaa casd', 'worker_number': 0}
 
 
 @post('/workerData')
 def worker_post():
-    print(request.forms.get('data'))
-    # username = request.forms.get('username')
-    # password = request.forms.get('password')
+    worker_number = request.forms.get('worker_number')
+    palindromes = request.forms.get('palindromes')
+
+    # Just debugging
+    print('I`m worker #%s and I found next palindromes:' % worker_number)
+    for i in palindromes.split(','):
+        print(i)
+    print()
 
 
 run(host='localhost', port=8080, debug=True)
-
-
-# import cherrypy
-# import os.path
-#
-#
-# class Index(object):
-# @cherrypy.expose
-#     def index(self):
-#         return file("index.html")
-#
-#
-# if __name__ == '__main__':
-#     current_dir = os.path.dirname(os.path.abspath(__file__))
-#
-#     conf = {
-#         '/': {
-#             'tools.sessions.on': True,
-#             'tools.staticdir.root': os.path.abspath(os.getcwd())
-#         },
-#         '/js': {
-#             'tools.staticdir.on': True,
-#             'tools.staticdir.dir': 'scripts'
-#         }
-#     }
-#
-#     cherrypy.quickstart(Index(), '/', conf)
