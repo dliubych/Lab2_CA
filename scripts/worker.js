@@ -20,7 +20,7 @@ var text, n = 100, workerNumber;
 //var xmlhttpGET, xmlhttpPOST;
 
 while (n != -1) {
-    postMessage('Waiting for text for processing');
+    //postMessage('Waiting for text for processing');
     //document.getElementById('info').innerHTML = 'Waiting for text for processing';
 
     var xmlhttpGET = new XMLHttpRequest();
@@ -46,7 +46,7 @@ while (n != -1) {
     text = whatWeGot['text'];
     n = whatWeGot['n'];
     workerNumber = whatWeGot['worker_number'];
-    postMessage('Working on text:\n' + text);
+    //postMessage('Working on text:\n' + text);
 
     //setTimeout(isPalindrome('aaaaaaaaaaaaa'), 2000);
 
@@ -62,4 +62,4 @@ while (n != -1) {
     }
 }
 
-postMessage('Finished working');
+//postMessage('Finished working');

@@ -9,6 +9,8 @@ sent_parts_without_deleting = []
 received_parts = []
 all_palindromes = []
 n = 5
+# result_time = 0
+finished = []
 
 
 @bottle.get('/scripts/:filename#.*#')
@@ -30,11 +32,21 @@ def server():
 def worker_get():
     number_of_clients = len(sent_parts) - len(received_parts)
     percents = len(received_parts)
-    if 100 <= percents:
-        print('Time of program work is %s seconds' % (time.time() - start_time))
-        return {'number_of_clients': number_of_clients, 'percents': percents, 'results': all_palindromes}
+    if finished == [] and 100 <= percents:
+        # global finished
+        # finished = True
+        finished.append(1)
+
+        working_time = time.time() - start_time
+        # print('Time of program work is %s seconds' % (time.time() - start_time))
+        if 100 in received_parts:
+            received_parts.remove(100)
+            if 100 not in received_parts:
+                received_parts.append(100)
+        # print(received_parts)
+        return {'number_of_clients': number_of_clients, 'percents': percents, 'results': all_palindromes, 'time': working_time}
     else:
-        return {'number_of_clients': number_of_clients, 'percents': percents, 'results': '-1'}
+        return {'number_of_clients': number_of_clients, 'percents': percents, 'results': '-1', 'time': 'none'}
 
 
 @get('/workerData')
