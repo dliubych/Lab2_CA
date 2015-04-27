@@ -18,9 +18,9 @@ def get_palindromes(text, n):
     return palindromes
 
 
-# txt = 'George Walker Bush (born July 6, 1946) is an American politician and businessman who served as the 43rd President of the United States from 2001 to 2009, and the 46th Governor of Texas from 1995 to 2000. The eldest son of Barbara and George H. W. Bush, he was born in New Haven, Connecticut. After graduating from Yale University in 1968 and Harvard Business School in 1975, Bush worked in oil businesses. He married Laura Welch in 1977 and ran unsuccessfully for the House of Representatives shortly thereafter. He later co-owned the Texas Rangers baseball team before defeating Ann Richards in the 1994 Texas gubernatorial election. Bush was elected president in 2000 after a close and controversial election, becoming the fourth president to be elected while receiving fewer popular votes nationwide than his opponent.[6] Bush is the second president to have been the son of a former president, the first having been John Quincy Adams.[7] He is also the brother of Jeb Bush, former Governor of Florida.'
-# print get_palindromes(txt, 3)
+txt = 'George Walker Bush (born July 6, 1946) is an American politician and businessman who served as the 43rd President of the United States from 2001 to 2009, and the 46th Governor of Texas from 1995 to 2000. The eldest son of Barbara and George H. W. Bush, he was born in New Haven, Connecticut. After graduating from Yale University in 1968 and Harvard Business School in 1975, Bush worked in oil businesses. He married Laura Welch in 1977 and ran unsuccessfully for the House of Representatives shortly thereafter. He later co-owned the Texas Rangers baseball team before defeating Ann Richards in the 1994 Texas gubernatorial election. Bush was elected president in 2000 after a close and controversial election, becoming the fourth president to be elected while receiving fewer popular votes nationwide than his opponent.[6] Bush is the second president to have been the son of a former president, the first having been John Quincy Adams.[7] He is also the brother of Jeb Bush, former Governor of Florida.'
+print get_palindromes(txt, 3)
 
-x = [1, 2, 3, 7, 4, 5]
-x.remove(7)
+x = [1, 1, 2, 3, 4]
+x.remove(1)
 print(x)

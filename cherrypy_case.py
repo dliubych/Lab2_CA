@@ -8,7 +8,7 @@ __author__ = 'Maxim'
 # class Index(object):
 # @cherrypy.expose
 #     def index(self):
-#         return file("index.html")
+#         return file("worker.html")
 #
 #
 # if __name__ == '__main__':
