@@ -7,7 +7,7 @@ __author__ = 'Maxim'
 #
 # class Index(object):
 # @cherrypy.expose
-#     def index(self):
+# def index(self):
 #         return file("worker.html")
 #
 #
