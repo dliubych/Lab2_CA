@@ -38,14 +38,15 @@ class PalindromeTest(unittest.TestCase):
         assert "Last found palindromes:" in checktext
 
     def test_server(self):
-        driver = webdriver.Safari()
+        driver = self.driver
         driver.get("http://localhost:8080/server")
         driver.find_element_by_id("Restart").click()
-        # element = driver.find_element_by_id("percents")
-        element = driver.find_element_by_tag_name("body")
-        checktext = element.text
-        print("Element check text: " + checktext)
-        assert "Percents:" in checktext
+        time.sleep(1)
+        element = driver.find_element_by_id("percents")
+        # element = driver.find_element_by_tag_name("body")
+        checktext = 'Element check text: ' + element.text
+        print(checktext)
+        assert "Percents: 0" in checktext
 
     def tearDown(self):
         self.driver.close()
