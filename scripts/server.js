@@ -23,7 +23,7 @@ function updateLocal() {
     document.getElementById('percents').innerHTML = 'Percents: ' + percents;
     if (results != '-1') {
         document.getElementById('results').innerHTML = 'Results: ' + results;
-        document.getElementById('time').innerHTML = 'Time: ' + time;
+        document.getElementById('time').innerHTML = 'Time: ' + time + ' seconds';
     }
 }
 

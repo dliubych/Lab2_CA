@@ -7,36 +7,40 @@ function isPalindrome(str) {
 }
 
 
-function getPalindromes(text, n) {
+function getPalindromes(text) {
     var palindromes = [];
     for (var N = 3; N <= 10; N++)
         for (var i = 0; i < text.length - N; i++)
-            if (isPalindrome(text.substr(i, N)))
+            if (isPalindrome(text.substr(i, N)) && palindromes.indexOf(text.substr(i, N)) == -1)
                 palindromes.push(text.substr(i, N));
     return palindromes;
 }
 
 
-var text, n = 100, workerNumber, palindromes;
+var text, state = 'work', workerNumber, palindromes = '<none>';
 
-while (n != -1) {
+postMessage('Waiting for first data');
+while (state != 'stop') {
     var requestGET = new XMLHttpRequest();
     requestGET.open("GET", "/workerData", false);
     requestGET.send();
 
     var whatWeGot = JSON.parse(requestGET.responseText);
     text = whatWeGot['text'];
-    n = whatWeGot['n'];
+    state = whatWeGot['state'];
     workerNumber = whatWeGot['worker_number'];
 
-    if (n != -1 && n != -2) {   // n == -1 - finish work; n == -2 - pause
-        palindromes = getPalindromes(text, n);
+    if (state == 'work') {
+        palindromes = getPalindromes(text);
 
         var requestPOST = new XMLHttpRequest();
         requestPOST.open("POST", "/workerData", true);
         requestPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         requestPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
-    }
-}
 
-postMessage(palindromes);
+        postMessage('Working.<br>Last founded palindromes: ' + palindromes);
+    }
+    else if (state == 'pause')
+        postMessage('Paused.<br>Last founded palindromes: ' + palindromes);
+}
+postMessage('Finished.<br>Last founded palindromes: ' + palindromes);

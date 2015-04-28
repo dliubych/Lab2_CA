@@ -70,7 +70,7 @@ def server_post():
 @get('/workerData')
 def worker_get():
     if pause_server:
-        return {'n': -2, 'text': '', 'worker_number': -1}
+        return {'state': 'pause', 'text': '', 'worker_number': -1}
 
     global start_time
     if start_time == 0:
@@ -81,16 +81,16 @@ def worker_get():
             sent_parts.append(i)
             worker_text = text[(len(text) - n) * (i - 1) /
                                number_of_parts_for_workers: (len(text) - n) * i / number_of_parts_for_workers + n]
-            return {'n': n, 'text': worker_text, 'worker_number': i}
+            return {'state': 'work', 'text': worker_text, 'worker_number': i}
 
     for i in range(1, number_of_parts_for_workers + 1):
         if i not in received_parts:
             worker_text = text[(len(text) - n) *
                                (i - 1) / number_of_parts_for_workers: (len(text) - n) * i / number_of_parts_for_workers + n]
-            return {'n': n, 'text': worker_text, 'worker_number': i}
+            return {'state': 'work', 'text': worker_text, 'worker_number': i}
 
     # Message that worker needs to stop
-    return {'n': -1, 'text': '', 'worker_number': -1}
+    return {'state': 'stop', 'text': '', 'worker_number': 0}
 
 
 # Processes data we got from worker: his id and founded palindromes
@@ -107,11 +107,12 @@ def worker_post():
         global finish_time
         finish_time = time.time()
 
+    for i in palindromes.split(','):
+        if i not in all_palindromes:
+            all_palindromes.append(i)
+
     # For debugging
     print('Part #%s finished' % worker_number)
-    for i in palindromes.split(','):
-        if i != '' and '\n' not in i and i not in all_palindromes:
-            all_palindromes.append(i)
 
 
 run(host='0.0.0.0', port=8080, debug=True)
