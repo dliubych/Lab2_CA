@@ -12,10 +12,12 @@ finished = []
 start_time = 0
 finish_time = 0
 number_of_parts_for_workers = 100
-already_send_finished_data = False
+file_with_text = open('text.txt', 'r')
+text = file_with_text.read()
+pause_server = False
 
 
-# Returns static file. Used for getting JavaScript files from /scripts folser
+# Returns static file. Used for getting JavaScript files from /scripts folder
 @bottle.get('/scripts/:filename#.*#')
 def send_static(filename):
     return static_file(filename, root='./scripts/')
@@ -39,11 +41,7 @@ def server():
 def worker_get():
     number_of_clients = len(sent_parts) - len(received_parts)
     percents = len(received_parts)
-    global already_send_finished_data
-    if not already_send_finished_data \
-            and number_of_parts_for_workers == percents:
-        already_send_finished_data = True
-
+    if number_of_parts_for_workers == percents:
         return {'number_of_clients': number_of_clients,
                 'percents': percents, 'results': all_palindromes,
                 'time': finish_time - start_time}
@@ -53,9 +51,27 @@ def worker_get():
                 'time': finish_time - start_time}
 
 
+# Processes data we got from worker: his id and founded palindromes
+@post('/serverData')
+def server_post():
+    data = request.forms.get('data')
+    global pause_server, sent_parts, received_parts
+    if data == 'pause':
+        pause_server = True
+    elif data == 'resume':
+        pause_server = False
+    elif data == 'restart':
+        pause_server = False
+        sent_parts = []
+        received_parts = []
+
+
 # Returns data for worker: his id and text
 @get('/workerData')
 def worker_get():
+    if pause_server:
+        return {'n': -2, 'text': '', 'worker_number': -1}
+
     global start_time
     if start_time == 0:
         start_time = time.time()
@@ -70,8 +86,7 @@ def worker_get():
     for i in range(1, number_of_parts_for_workers + 1):
         if i not in received_parts:
             worker_text = text[(len(text) - n) *
-                               (i - 1) / number_of_parts_for_workers: (len(
-                text) - n) * i / number_of_parts_for_workers + n]
+                               (i - 1) / number_of_parts_for_workers: (len(text) - n) * i / number_of_parts_for_workers + n]
             return {'n': n, 'text': worker_text, 'worker_number': i}
 
     # Message that worker needs to stop
@@ -84,7 +99,8 @@ def worker_post():
     worker_number = request.forms.get('worker_number')
     palindromes = request.forms.get('palindromes')
 
-    if int(worker_number) not in received_parts:
+    if int(worker_number) not in received_parts\
+            and int(worker_number) in sent_parts:
         received_parts.append(int(worker_number))
 
     if len(received_parts) == number_of_parts_for_workers:
@@ -98,6 +114,4 @@ def worker_post():
             all_palindromes.append(i)
 
 
-file_with_text = open('text.txt', 'r')
-text = file_with_text.read()
 run(host='0.0.0.0', port=8080, debug=True)

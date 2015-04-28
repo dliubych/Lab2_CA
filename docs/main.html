@@ -24,14 +24,19 @@
 <span class="kn">import</span> <span class="nn">bottle</span>
 
 
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">sent_parts</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">free_parts</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">sent_parts_without_deleting</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">received_parts</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">all_palindromes</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">finished</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">23</span>
+<span class="n">finished</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">finish_time</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">number_of_parts_for_workers</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">file_with_text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;text.txt&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">file_with_text</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">pause_server</span> <span class="o">=</span> <span class="bp">False</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -40,7 +45,7 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Returns static file. Used for getting JavaScript files from /scripts folser</p>
+      <p>Returns static file. Used for getting JavaScript files from /scripts folder</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nd">@bottle.get</span><span class="p">(</span><span class="s">&#39;/scripts/:filename#.*#&#39;</span><span class="p">)</span>
@@ -90,20 +95,14 @@ of done work and if work finished results with working time</p>
 <span class="k">def</span> <span class="nf">worker_get</span><span class="p">():</span>
     <span class="n">number_of_clients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_parts</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">received_parts</span><span class="p">)</span>
     <span class="n">percents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">received_parts</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">finished</span> <span class="o">==</span> <span class="p">[]</span> <span class="ow">and</span> <span class="mi">100</span> <span class="o">&lt;=</span> <span class="n">percents</span><span class="p">:</span>
-        <span class="n">finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="n">working_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
-        <span class="k">if</span> <span class="mi">100</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
-            <span class="n">received_parts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-            <span class="k">if</span> <span class="mi">100</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
-                <span class="n">received_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">number_of_parts_for_workers</span> <span class="o">==</span> <span class="n">percents</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s">&#39;number_of_clients&#39;</span><span class="p">:</span> <span class="n">number_of_clients</span><span class="p">,</span>
                 <span class="s">&#39;percents&#39;</span><span class="p">:</span> <span class="n">percents</span><span class="p">,</span> <span class="s">&#39;results&#39;</span><span class="p">:</span> <span class="n">all_palindromes</span><span class="p">,</span>
-                <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="n">working_time</span><span class="p">}</span>
+                <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="n">finish_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s">&#39;number_of_clients&#39;</span><span class="p">:</span> <span class="n">number_of_clients</span><span class="p">,</span>
-                <span class="s">&#39;percents&#39;</span><span class="p">:</span> <span class="n">percents</span><span class="p">,</span> <span class="s">&#39;results&#39;</span><span class="p">:</span> <span class="s">&#39;-1&#39;</span><span class="p">,</span> <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="s">&#39;none&#39;</span><span class="p">}</span></pre></div>
+                <span class="s">&#39;percents&#39;</span><span class="p">:</span> <span class="n">percents</span><span class="p">,</span> <span class="s">&#39;results&#39;</span><span class="p">:</span> <span class="s">&#39;-1&#39;</span><span class="p">,</span>
+                <span class="s">&#39;time&#39;</span><span class="p">:</span> <span class="n">finish_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -112,23 +111,21 @@ of done work and if work finished results with working time</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <p>Returns data for worker: his id and text</p>
+      <p>Processes data we got from worker: his id and founded palindromes</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/workerData&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">worker_get</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sent_parts</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
-            <span class="n">sent_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span>
-                               <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
-            <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span>
-                               <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span></pre></div>
+      <div class="highlight"><pre><span class="nd">@post</span><span class="p">(</span><span class="s">&#39;/serverData&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">server_post</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">pause_server</span><span class="p">,</span> <span class="n">sent_parts</span><span class="p">,</span> <span class="n">received_parts</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;pause&#39;</span><span class="p">:</span>
+        <span class="n">pause_server</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">elif</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;resume&#39;</span><span class="p">:</span>
+        <span class="n">pause_server</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">elif</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;restart&#39;</span><span class="p">:</span>
+        <span class="n">pause_server</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">sent_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">received_parts</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -137,10 +134,30 @@ of done work and if work finished results with working time</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-6'>#</a>
       </div>
-      <p>Message that worker needs to stop</p>
+      <p>Returns data for worker: his id and text</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span></pre></div>
+      <div class="highlight"><pre><span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/workerData&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">worker_get</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">pause_server</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+
+    <span class="k">global</span> <span class="n">start_time</span>
+    <span class="k">if</span> <span class="n">start_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sent_parts</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
+            <span class="n">sent_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span>
+                               <span class="n">number_of_parts_for_workers</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
+            <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span>
+                               <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -148,6 +165,18 @@ of done work and if work finished results with working time</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Message that worker needs to stop</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
       </div>
       <p>Processes data we got from worker: his id and founded palindromes</p>
     </div>
@@ -157,15 +186,20 @@ of done work and if work finished results with working time</p>
     <span class="n">worker_number</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;worker_number&#39;</span><span class="p">)</span>
     <span class="n">palindromes</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;palindromes&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">worker_number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
-        <span class="n">received_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">worker_number</span><span class="p">))</span></pre></div>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">worker_number</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span>\
+            <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">worker_number</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sent_parts</span><span class="p">:</span>
+        <span class="n">received_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">worker_number</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">received_parts</span><span class="p">)</span> <span class="o">==</span> <span class="n">number_of_parts_for_workers</span><span class="p">:</span>
+        <span class="k">global</span> <span class="n">finish_time</span>
+        <span class="n">finish_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-9'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p>For debugging</p>
     </div>
@@ -176,8 +210,6 @@ of done work and if work finished results with working time</p>
             <span class="n">all_palindromes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
 
-<span class="n">file_with_text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;text.txt&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
-<span class="n">text</span> <span class="o">=</span> <span class="n">file_with_text</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 </pre></div>

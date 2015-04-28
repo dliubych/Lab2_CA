@@ -26,3 +26,24 @@ function updateLocal() {
         document.getElementById('time').innerHTML = 'Time: ' + time;
     }
 }
+
+function pause() {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/serverData", true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.send("data=pause");
+}
+
+function resume() {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/serverData", true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.send("data=resume");
+}
+
+function restart() {
+    var request = new XMLHttpRequest();
+    request.open("POST", "/serverData", true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.send("data=restart");
+}

@@ -48,15 +48,13 @@ while (n != -1) {
 
     //setTimeout(isPalindrome('aaaaaaaaaaaaa'), 2000);
 
-    if (n != -1) {
+    if (n != -1 && n != -2) {
         var palindromes = getPalindromes(text, n);
 
         var xmlhttpPOST = new XMLHttpRequest();
         xmlhttpPOST.open("POST", "/workerData", true);
         xmlhttpPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xmlhttpPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
-
-
     }
 }
 
