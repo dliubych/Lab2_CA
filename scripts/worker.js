@@ -38,9 +38,9 @@ while (state != 'stop') {
         requestPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         requestPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
 
-        postMessage('Working.<br>Last founded palindromes: ' + palindromes);
+        postMessage('Working.<br>Last found palindromes: ' + palindromes);
     }
     else if (state == 'pause')
-        postMessage('Paused.<br>Last founded palindromes: ' + palindromes);
+        postMessage('Paused.<br>Last found palindromes: ' + palindromes);
 }
-postMessage('Finished.<br>Last founded palindromes: ' + palindromes);
+postMessage('Finished.<br>Last found palindromes: ' + palindromes);
