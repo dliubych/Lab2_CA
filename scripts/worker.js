@@ -19,43 +19,21 @@ function getPalindromes(text, n) {
 var text, n = 100, workerNumber;
 
 while (n != -1) {
-    //postMessage('Waiting for text for processing');
+    var requestGET = new XMLHttpRequest();
+    requestGET.open("GET", "/workerData", false);
+    requestGET.send();
 
-    var xmlhttpGET = new XMLHttpRequest();
-//xmlhttpGET.onreadystatechange = function () {
-//    if (xmlhttpGET.readyState == 4 && xmlhttpGET.status == 200) {
-//        var whatWeGot = JSON.parse(xmlhttpGET.responseText);
-//        text = whatWeGot['text'];
-//        n = whatWeGot['n'];
-//        workerNumber = whatWeGot['worker_number'];
-//
-//        var palindromes = getPalindromes(text, n);
-//
-//        xmlhttpPOST = new XMLHttpRequest();
-//        xmlhttpPOST.open("POST", "/workerData", true);
-//        xmlhttpPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//        xmlhttpPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
-//    }
-//};
-    xmlhttpGET.open("GET", "/workerData", false);
-    xmlhttpGET.send();
-
-    var whatWeGot = JSON.parse(xmlhttpGET.responseText);
+    var whatWeGot = JSON.parse(requestGET.responseText);
     text = whatWeGot['text'];
     n = whatWeGot['n'];
     workerNumber = whatWeGot['worker_number'];
-    //postMessage('Working on text:\n' + text);
 
-    //setTimeout(isPalindrome('aaaaaaaaaaaaa'), 2000);
-
-    if (n != -1 && n != -2) {
+    if (n != -1 && n != -2) {   // n == -1 - finish work; n == -2 - pause
         var palindromes = getPalindromes(text, n);
 
-        var xmlhttpPOST = new XMLHttpRequest();
-        xmlhttpPOST.open("POST", "/workerData", true);
-        xmlhttpPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttpPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
+        var requestPOST = new XMLHttpRequest();
+        requestPOST.open("POST", "/workerData", true);
+        requestPOST.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        requestPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
     }
 }
-
-//postMessage('Finished working');
