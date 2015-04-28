@@ -9,14 +9,15 @@ function isPalindrome(str) {
 
 function getPalindromes(text, n) {
     var palindromes = [];
-    for (var i = 0; i < text.length - n; i++)
-        if (isPalindrome(text.substr(i, n)))
-            palindromes.push(text.substr(i, n));
+    for (var N = 3; N <= 10; N++)
+        for (var i = 0; i < text.length - N; i++)
+            if (isPalindrome(text.substr(i, N)))
+                palindromes.push(text.substr(i, N));
     return palindromes;
 }
 
 
-var text, n = 100, workerNumber;
+var text, n = 100, workerNumber, palindromes;
 
 while (n != -1) {
     var requestGET = new XMLHttpRequest();
@@ -29,7 +30,7 @@ while (n != -1) {
     workerNumber = whatWeGot['worker_number'];
 
     if (n != -1 && n != -2) {   // n == -1 - finish work; n == -2 - pause
-        var palindromes = getPalindromes(text, n);
+        palindromes = getPalindromes(text, n);
 
         var requestPOST = new XMLHttpRequest();
         requestPOST.open("POST", "/workerData", true);
@@ -37,3 +38,5 @@ while (n != -1) {
         requestPOST.send("worker_number=" + workerNumber + "&palindromes=" + palindromes);
     }
 }
+
+postMessage(palindromes);
