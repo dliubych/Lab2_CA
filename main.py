@@ -2,14 +2,17 @@ from bottle import *
 import bottle
 
 
-start_time = time.time()
 sent_parts = []
 free_parts = []
 sent_parts_without_deleting = []
 received_parts = []
 all_palindromes = []
-n = 5
+n = 23
 finished = []
+start_time = 0
+finish_time = 0
+number_of_parts_for_workers = 100
+already_send_finished_data = False
 
 
 # Returns static file. Used for getting JavaScript files from /scripts folser
@@ -36,36 +39,39 @@ def server():
 def worker_get():
     number_of_clients = len(sent_parts) - len(received_parts)
     percents = len(received_parts)
-    if finished == [] and 100 <= percents:
-        finished.append(1)
+    global already_send_finished_data
+    if not already_send_finished_data \
+            and number_of_parts_for_workers == percents:
+        already_send_finished_data = True
 
-        working_time = time.time() - start_time
-        if 100 in received_parts:
-            received_parts.remove(100)
-            if 100 not in received_parts:
-                received_parts.append(100)
         return {'number_of_clients': number_of_clients,
                 'percents': percents, 'results': all_palindromes,
-                'time': working_time}
+                'time': finish_time - start_time}
     else:
         return {'number_of_clients': number_of_clients,
-                'percents': percents, 'results': '-1', 'time': 'none'}
+                'percents': percents, 'results': '-1',
+                'time': finish_time - start_time}
 
 
 # Returns data for worker: his id and text
 @get('/workerData')
 def worker_get():
-    for i in range(1, 101):
+    global start_time
+    if start_time == 0:
+        start_time = time.time()
+
+    for i in range(1, number_of_parts_for_workers + 1):
         if i not in sent_parts and i not in received_parts:
             sent_parts.append(i)
-            worker_text = text[(len(text) - n) *
-                               (i - 1) / 100: (len(text) - n) * i / 100 + n]
+            worker_text = text[(len(text) - n) * (i - 1) /
+                               number_of_parts_for_workers: (len(text) - n) * i / number_of_parts_for_workers + n]
             return {'n': n, 'text': worker_text, 'worker_number': i}
 
-    for i in range(1, 101):
+    for i in range(1, number_of_parts_for_workers + 1):
         if i not in received_parts:
             worker_text = text[(len(text) - n) *
-                               (i - 1) / 100: (len(text) - n) * i / 100 + n]
+                               (i - 1) / number_of_parts_for_workers: (len(
+                text) - n) * i / number_of_parts_for_workers + n]
             return {'n': n, 'text': worker_text, 'worker_number': i}
 
     # Message that worker needs to stop
@@ -78,8 +84,12 @@ def worker_post():
     worker_number = request.forms.get('worker_number')
     palindromes = request.forms.get('palindromes')
 
-    if worker_number not in received_parts:
+    if int(worker_number) not in received_parts:
         received_parts.append(int(worker_number))
+
+    if len(received_parts) == number_of_parts_for_workers:
+        global finish_time
+        finish_time = time.time()
 
     # For debugging
     print('Part #%s finished' % worker_number)

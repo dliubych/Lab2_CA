@@ -17,11 +17,9 @@ function getPalindromes(text, n) {
 
 
 var text, n = 100, workerNumber;
-//var xmlhttpGET, xmlhttpPOST;
 
 while (n != -1) {
     //postMessage('Waiting for text for processing');
-    //document.getElementById('info').innerHTML = 'Waiting for text for processing';
 
     var xmlhttpGET = new XMLHttpRequest();
 //xmlhttpGET.onreadystatechange = function () {
