@@ -20,7 +20,7 @@ function getPalindromes(text) {
 var text, state = 'work', workerNumber, palindromes = '<none>';
 
 postMessage('Waiting for first data');
-while (state != 'stop') {
+while (state != 'exit') {
     var requestGET = new XMLHttpRequest();
     requestGET.open("GET", "/workerData", false);
     requestGET.send();
@@ -42,5 +42,8 @@ while (state != 'stop') {
     }
     else if (state == 'pause')
         postMessage('Paused.<br>Last found palindromes: ' + palindromes);
+    else if (state == 'stop')
+        postMessage('Finished.<br>Last found palindromes: ' + palindromes);
+    else
+        postMessage('Waiting for task.');
 }
-postMessage('Finished.<br>Last found palindromes: ' + palindromes);

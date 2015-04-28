@@ -55,7 +55,7 @@ def worker_get():
 @post('/serverData')
 def server_post():
     data = request.forms.get('data')
-    global pause_server, sent_parts, received_parts
+    global pause_server, sent_parts, received_parts, start_time
     if data == 'pause':
         pause_server = True
     elif data == 'resume':
@@ -64,6 +64,7 @@ def server_post():
         pause_server = False
         sent_parts = []
         received_parts = []
+        start_time = 0
 
 
 # Returns data for worker: his id and text

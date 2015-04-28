@@ -46,4 +46,6 @@ function restart() {
     request.open("POST", "/serverData", true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.send("data=restart");
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('time').innerHTML = '';
 }

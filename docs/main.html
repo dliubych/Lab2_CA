@@ -29,7 +29,7 @@
 <span class="n">sent_parts_without_deleting</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">received_parts</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">all_palindromes</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">23</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">finished</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">finish_time</span> <span class="o">=</span> <span class="mi">0</span>
@@ -117,7 +117,7 @@ of done work and if work finished results with working time</p>
       <div class="highlight"><pre><span class="nd">@post</span><span class="p">(</span><span class="s">&#39;/serverData&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">server_post</span><span class="p">():</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
-    <span class="k">global</span> <span class="n">pause_server</span><span class="p">,</span> <span class="n">sent_parts</span><span class="p">,</span> <span class="n">received_parts</span>
+    <span class="k">global</span> <span class="n">pause_server</span><span class="p">,</span> <span class="n">sent_parts</span><span class="p">,</span> <span class="n">received_parts</span><span class="p">,</span> <span class="n">start_time</span>
     <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;pause&#39;</span><span class="p">:</span>
         <span class="n">pause_server</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="k">elif</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;resume&#39;</span><span class="p">:</span>
@@ -125,7 +125,8 @@ of done work and if work finished results with working time</p>
     <span class="k">elif</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;restart&#39;</span><span class="p">:</span>
         <span class="n">pause_server</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">sent_parts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">received_parts</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
+        <span class="n">received_parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -140,7 +141,7 @@ of done work and if work finished results with working time</p>
       <div class="highlight"><pre><span class="nd">@get</span><span class="p">(</span><span class="s">&#39;/workerData&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">worker_get</span><span class="p">():</span>
     <span class="k">if</span> <span class="n">pause_server</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="s">&#39;pause&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
 
     <span class="k">global</span> <span class="n">start_time</span>
     <span class="k">if</span> <span class="n">start_time</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -151,13 +152,13 @@ of done work and if work finished results with working time</p>
             <span class="n">sent_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span>
                                <span class="n">number_of_parts_for_workers</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="s">&#39;work&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">received_parts</span><span class="p">:</span>
             <span class="n">worker_text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span>
                                <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span><span class="p">:</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">number_of_parts_for_workers</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span></pre></div>
+            <span class="k">return</span> <span class="p">{</span><span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="s">&#39;work&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="n">worker_text</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -169,7 +170,7 @@ of done work and if work finished results with working time</p>
       <p>Message that worker needs to stop</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;n&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">return</span> <span class="p">{</span><span class="s">&#39;state&#39;</span><span class="p">:</span> <span class="s">&#39;stop&#39;</span><span class="p">,</span> <span class="s">&#39;text&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;worker_number&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -192,7 +193,11 @@ of done work and if work finished results with working time</p>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">received_parts</span><span class="p">)</span> <span class="o">==</span> <span class="n">number_of_parts_for_workers</span><span class="p">:</span>
         <span class="k">global</span> <span class="n">finish_time</span>
-        <span class="n">finish_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
+        <span class="n">finish_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palindromes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_palindromes</span><span class="p">:</span>
+            <span class="n">all_palindromes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -205,9 +210,6 @@ of done work and if work finished results with working time</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Part #</span><span class="si">%s</span><span class="s"> finished&#39;</span> <span class="o">%</span> <span class="n">worker_number</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">palindromes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">and</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_palindromes</span><span class="p">:</span>
-            <span class="n">all_palindromes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
 
 <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
