@@ -19,7 +19,6 @@ import unittest
 from selenium import webdriver
 import os
 import time
-from selenium.webdriver.common.keys import Keys
 
 
 class PalindromeTest(unittest.TestCase):
@@ -37,7 +36,16 @@ class PalindromeTest(unittest.TestCase):
         body = driver.find_element_by_tag_name("body")
         checktext = body.text
         assert "Last found palindromes:" in checktext
-        # assert "No results found." not in driver.page_source
+
+    def test_server(self):
+        driver = webdriver.Safari()
+        driver.get("http://localhost:8080/server")
+        driver.find_element_by_id("Restart").click()
+        # element = driver.find_element_by_id("percents")
+        element = driver.find_element_by_tag_name("body")
+        checktext = element.text
+        print("Element check text: " + checktext)
+        assert "Percents:" in checktext
 
     def tearDown(self):
         self.driver.close()
