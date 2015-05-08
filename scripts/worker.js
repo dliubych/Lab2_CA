@@ -16,6 +16,14 @@ function getPalindromes(text) {
     return palindromes;
 }
 
+function searchInfo(text) {
+    var info = "Jesus";
+    info_length = info.length;
+    for (var i = info_length; i < text.length; i++)
+        if (text.substr(i, info_length) == info)
+            palindromes.push(text.substr(i, info_length))
+    return palindromes;
+}
 
 var text, state = 'work', workerNumber, palindromes = '<none>';
 
@@ -31,7 +39,7 @@ while (state != 'exit') {
     workerNumber = whatWeGot['worker_number'];
 
     if (state == 'work') {
-        palindromes = getPalindromes(text);
+        palindromes = searchInfo(text);
 
         var requestPOST = new XMLHttpRequest();
         requestPOST.open("POST", "/workerData", true);
