@@ -17,11 +17,12 @@ function getPalindromes(text) {
 }
 
 function searchInfo(text) {
-    var info = "Jesus";
+    var palindromes = [];
+    var info = "Bible";
     info_length = info.length;
-    for (var i = info_length; i < text.length; i++)
+    for (var i = 0; i < text.length-info_length; i++)
         if (text.substr(i, info_length) == info)
-            palindromes.push(text.substr(i, info_length))
+            palindromes.push(text.substr(i, info_length));
     return palindromes;
 }
 
